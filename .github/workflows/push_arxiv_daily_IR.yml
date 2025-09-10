@@ -39,11 +39,6 @@ jobs:
       - name: PUSH ARXIV DAILY
         run: python arxiv.py
         
-      # ↓↓↓ 这是新增的核心步骤 ↓↓↓
-      - name: Pull remote changes before commit
-        run: git pull --rebase
-      # ↑↑↑ 这是新增的核心步骤 ↑↑↑
-
       - name: Commit files
         id: commit
         run: |

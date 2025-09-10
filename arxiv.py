@@ -143,7 +143,7 @@ def save_and_translate(papers, filename='arxiv.json'):
 
     print(f'[+] 总检索条数: {len(papers)} | 命中缓存: {len(translated_papers)} | 实际返回: {len(untranslated_papers)}....')
 
-    return untranslated_papers # 只需要发送缓存中没有的
+    return translated_papers # untranslated_papers # 只需要发送缓存中没有的
 
         
 def cronjob():

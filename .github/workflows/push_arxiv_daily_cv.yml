@@ -20,6 +20,7 @@ jobs:
       FEISHU_URL: ${{ secrets.FEISHU_URL_cv }}
       DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
       MODEL_TYPE: "DeepSeek"
+      PROMPT: "挑选与以下主题相关的内容，不相关的过滤掉：{low-level, 图像反射去除， 图像超分， 图像all-in-one修复, 轻量化图像修复}等"
 
     permissions:
       issues: write

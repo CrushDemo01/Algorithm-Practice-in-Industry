@@ -16,7 +16,7 @@ jobs:
       SERVERCHAN_API_KEY: ${{ secrets.SERVERCHAN_API_KEY }}
       CAIYUN_TOKEN: ${{ secrets.CAIYUN_TOKEN }}
       QUERY: "cs.IR"
-      LIMITS: 5
+      LIMITS: 10
       FEISHU_URL: ${{ secrets.FEISHU_URL_ir }}
       DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
       MODEL_TYPE: "DeepSeek"
@@ -39,6 +39,11 @@ jobs:
       - name: PUSH ARXIV DAILY
         run: python arxiv.py
         
+      # ↓↓↓ 这是新增的核心步骤 ↓↓↓
+      - name: Pull remote changes before commit
+        run: git pull --rebase
+      # ↑↑↑ 这是新增的核心步骤 ↑↑↑
+
       - name: Commit files
         id: commit
         run: |

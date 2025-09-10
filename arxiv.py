@@ -161,7 +161,7 @@ def rank_papers_with_deepseek(papers, top_k=None, temperature=0.8):
         "content": (
             "你是一位资深学术评审，擅长在 IR/RecSys/LLM/VLM/CV 方向识别高质量论文。"
             "综合考虑：创新性、方法有效性、实证力度、潜在影响力、与工业可落地性。"
-            "请给每篇论文 0-10 的评分，并挑选最值得关注的前 K 篇。"
+            "请给每篇论文 0-10 的评分，并挑选最值得关注的几篇"
             "仅输出 JSON 数组，不要多余文本。每个元素包含："
             '{"index": 整数, "score": 浮点数, "decision": "keep|drop", "reason": "简短中文理由"}'
         )
@@ -209,7 +209,7 @@ def rank_papers_with_deepseek(papers, top_k=None, temperature=0.8):
 
     if not top:
         # 回退：若模型未选出任何 keep，则保留最多 3 篇作为兜底
-        fallback_n = min(3, len(papers))
+        fallback_n = min(2, len(papers))
         top = [{"index": i, "score": 6.0, "decision": "keep", "reason": "回退策略"} for i in range(fallback_n)]
 
     selected = []

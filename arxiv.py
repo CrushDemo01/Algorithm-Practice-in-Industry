@@ -17,6 +17,7 @@ QUERY = os.environ.get('QUERY', 'cs.IR')
 LIMITS = int(os.environ.get('LIMITS', 3))
 FEISHU_URL = os.environ.get("FEISHU_URL", None)
 MODEL_TYPE = os.environ.get("MODEL_TYPE", "DeepSeek")
+PROMPT = os.environ.get("PROMPT", '无')
 MIN_SCORE = os.environ.get('MIN_SCORE', None)
 try:
     MIN_SCORE = float(MIN_SCORE) if MIN_SCORE is not None else None
@@ -117,7 +118,7 @@ def send_feishu_message(title, content, url=FEISHU_URL):
     # 回退：纯文本
     fallback = {
         "msg_type": "text",
-        "content": {"text": f"{title}\n\n{content}"[:25000]}
+        "content": {"text": f"{title}\n{content}"[:25000]}
     }
     requests.post(url=url, data=json.dumps(fallback), headers=headers)
 
@@ -171,10 +172,11 @@ def rank_papers_with_deepseek(papers, top_k=None, min_score: float = None, tempe
     system_prompt = {
         "role": "system",
         "content": (
-            "你是一位资深学术评审，擅长在 IR/RecSys/LLM/VLM/CV 方向识别高质量论文。"
-            "综合考虑：创新性、方法有效性、实证力度、潜在影响力、与工业可落地性。"
+            "你是一位资深学术评审，擅长在 IR/RecSys/LLM/VLM/CV 方向识别高质量论文。\n"
+            f"请严格限制要求以下主题的论文，不相关的请score置为0：{PROMPT}。\n"
+            "综合考虑：创新性、方法有效性、实证力度、潜在影响力、与工业可落地性。\n"
             "请给每篇论文 0-10 的评分（允许小数），并挑选值得关注的论文。"
-            "仅输出 JSON 数组，不要多余文本。每个元素包含："
+            "仅输出 JSON 数组，不要多余文本。每个元素包含：\n"
             '{"index": 整数, "score": 浮点数, "decision": "keep|drop", "reason": "简短中文理由"}'
         )
     }
@@ -195,9 +197,9 @@ def rank_papers_with_deepseek(papers, top_k=None, min_score: float = None, tempe
         items.append(f"{i}. {title}\n{body}")
 
     user_prompt = (
-        f"下面是待评审论文，共 {len(papers)} 篇。请选出前 {top_k} 篇：\n\n" +
-        "\n\n".join(items) +
-        "\n\n请仅返回 JSON 数组（UTF-8，无额外注释/代码块）。"
+        f"下面是待评审论文，共 {len(papers)} 篇。请选筛选：\n" +
+        "\n".join(items) +
+        "\n请仅返回 JSON 数组（UTF-8，无额外注释/代码块）。"
     )
 
     raw = client.retry_call(user_prompt, system_prompt, temperature=temperature)
@@ -291,8 +293,11 @@ def cronjob():
         title = paper['title']
         url = paper['url']
         pub_date = paper['pub_date']
-        summary = paper['summary']
+        # summary = paper['summary']
         translated = paper['translated']
+        score = paper.get('score', 0)
+        decision = paper.get('decision', 'unknown')
+        reason = paper.get('reason', '')
 
         yesterday = get_yesterday()
 
@@ -303,16 +308,19 @@ def cronjob():
 
         msg_url = f'URL: {url}'
         msg_pub_date = f'Pub Date：{pub_date}'
-        msg_summary = f'Summary：\n\n{summary}'
-        msg_translated = f'Translated (Powered by {MODEL_TYPE}):\n\n{translated}'
+        msg_rating = f'AI评分：{score:.1f}/10 | 决策：{decision}'
+        if reason:
+            msg_rating += f'\n理由：{reason}'
+        # msg_summary = f'Summary：\n{summary}'
+        msg_translated = f'Translated (Powered by {MODEL_TYPE}):\n{translated}'
 
         push_title = f'Arxiv:{QUERY}[{ii}]@{today}'
-        msg_content = f"[{msg_title}]({url})\n\n{msg_pub_date}\n\n{msg_url}\n\n{msg_translated}\n\n{msg_summary}\n\n"
+        msg_content = f"[{msg_title}]({url})\n{msg_pub_date}\n{msg_url}\n{msg_rating}\n{msg_translated}\n"
 
         # send_wechat_message(push_title, msg_content, SERVERCHAN_API_KEY)
         send_feishu_message(push_title, msg_content, FEISHU_URL)
 
-        time.sleep(12)
+        time.sleep(15)
 
     print('[+] 每日推送任务执行结束')
 

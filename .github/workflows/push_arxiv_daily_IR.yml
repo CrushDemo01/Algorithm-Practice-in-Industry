@@ -7,7 +7,7 @@ env:
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 10 * * *' # 每天 UTC 时间 10:00 触发, 即上海时间18点
+    - cron: '0 1,7,13,19 * * *' # 从UTC 1点开始每6小时（1/7/13/19点）
 
 jobs:
   daily-push:
@@ -39,11 +39,6 @@ jobs:
 
       - name: PUSH ARXIV DAILY
         run: python arxiv.py
-        
-      # ↓↓↓ 这是新增的核心步骤 ↓↓↓
-      - name: Pull remote changes before commit
-        run: git pull --rebase
-      # ↑↑↑ 这是新增的核心步骤 ↑↑↑
 
       - name: Commit files
         id: commit

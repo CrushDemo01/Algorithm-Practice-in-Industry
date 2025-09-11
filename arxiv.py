@@ -309,7 +309,7 @@ def cronjob():
         else:
             msg_title = f'{title}'
 
-        msg_url = f'URL: {url} | Pub Date：{pub_date} | 评分: {score:.2f}/10'
+        msg_url = f'URL: {url} | Pub Date：{pub_date} | 评分: {score-1:.2f}/5'
         msg_rating = f'AI判断理由：{reason}' if reason else 'AI判断理由：无'
         msg_translated = f'Translated (Powered by {MODEL_TYPE}):\n{translated}'
 

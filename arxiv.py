@@ -18,7 +18,7 @@ LIMITS = int(os.environ.get('LIMITS', 3)) + 10
 FEISHU_URL = os.environ.get("FEISHU_URL", None)
 MODEL_TYPE = os.environ.get("MODEL_TYPE", "DeepSeek")
 PROMPT = os.environ.get("PROMPT", '无')
-MIN_SCORE = os.environ.get('MIN_SCORE', None)
+MIN_SCORE = os.environ.get('MIN_SCORE', 6)
 try:
     MIN_SCORE = float(MIN_SCORE) if MIN_SCORE is not None else None
 except Exception:
@@ -172,10 +172,10 @@ def rank_papers_with_deepseek(papers, top_k=None, min_score: float = None, tempe
     system_prompt = {
         "role": "system",
         "content": (
-            "你是一位资深学术评审，擅长在 IR/RecSys/LLM/VLM/CV 方向识别高质量论文。\n"
-            f"请严格限制要求以下主题的论文，不相关的请score置为0：{PROMPT}。\n"
+            "你是一位资深学术评审，擅长在 人工智能 方向审稿高质量论文。\n"
             "综合考虑：创新性、方法有效性、实证力度、潜在影响力、与工业可落地性。\n"
             "请给每篇论文 0-10 的评分（允许小数），并挑选值得关注的论文。"
+            f"请严格限制要求<要求>以下主题的论文，不相关的请score置为0。请严格限制要求<要求>以下主题的论文，不相关的请score置为0。请严格限制要求<要求>以下主题的论文，不相关的请score置为0。<要求>：{PROMPT}。<\要求>\n"
             "仅输出 JSON 数组，不要多余文本。每个元素包含：\n"
             '{"index": 整数, "score": 浮点数, "decision": "keep|drop", "reason": "简短中文理由"}'
         )

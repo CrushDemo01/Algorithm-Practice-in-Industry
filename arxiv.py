@@ -275,6 +275,7 @@ def cronjob():
     papers = search_arxiv_papers(QUERY, LIMITS)
     # 使用大模型打分筛选（不强制数量，支持 MIN_SCORE 环境变量阈值）
     papers = rank_papers_with_deepseek(papers, top_k=None, min_score=MIN_SCORE)
+    print(f'[+] 筛选后剩余稿件数量: {len(papers)}....')
 
     if papers == []:
         
@@ -299,6 +300,8 @@ def cronjob():
         decision = paper.get('decision', 'unknown')
         reason = paper.get('reason', '')
 
+        # 获取当前时间
+        current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         yesterday = get_yesterday()
 
         if pub_date == yesterday:
@@ -306,21 +309,16 @@ def cronjob():
         else:
             msg_title = f'{title}'
 
-        msg_url = f'URL: {url}'
-        msg_pub_date = f'Pub Date：{pub_date}'
-        msg_rating = f'AI评分：{score:.1f}/10 | 决策：{decision}'
-        if reason:
-            msg_rating += f'\n理由：{reason}'
-        # msg_summary = f'Summary：\n{summary}'
+        msg_url = f'URL: {url} | Pub Date：{pub_date} | 评分: {score:.2f}/10'
+        msg_rating = f'AI判断理由：{reason}' if reason else 'AI判断理由：无'
         msg_translated = f'Translated (Powered by {MODEL_TYPE}):\n{translated}'
 
-        push_title = f'Arxiv:{QUERY}[{ii}]@{today}'
-        msg_content = f"[{msg_title}]({url})\n{msg_pub_date}\n{msg_url}\n{msg_rating}\n{msg_translated}\n"
-
+        push_title = f'Arxiv:{QUERY}[{ii}]@{current_time}'
+        msg_content = f"[{msg_title}]({url})\n{msg_url}\n{msg_rating}\n{msg_translated}\n"
         # send_wechat_message(push_title, msg_content, SERVERCHAN_API_KEY)
         send_feishu_message(push_title, msg_content, FEISHU_URL)
 
-        time.sleep(15)
+        time.sleep(10)
 
     print('[+] 每日推送任务执行结束')
 
@@ -329,6 +327,3 @@ def cronjob():
 
 if __name__ == '__main__':
     cronjob()
-
-
-

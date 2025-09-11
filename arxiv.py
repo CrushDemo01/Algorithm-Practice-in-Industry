@@ -243,12 +243,10 @@ def rank_papers_with_deepseek(papers, top_k=None, min_score: float = None, tempe
     if min_score is not None:
         kept = [x for x in kept if x["score"] >= float(min_score)]
     # 不强制数量：默认保留全部 keep；若指定 top_k 则截断
-    top = kept if top_k is None else kept[:max(0, min(top_k, len(kept)))]
+    top = kept if top_k is None else []
 
     if not top:
-        # 回退：若模型未选出任何 keep，则保留最多 3 篇作为兜底
-        fallback_n = min(2, len(papers))
-        top = [{"index": i, "score": 6.0, "decision": "keep", "reason": "回退策略"} for i in range(fallback_n)]
+        return []
 
     selected = []
     for x in top:
@@ -278,9 +276,11 @@ def cronjob():
     print(f'[+] 筛选后剩余稿件数量: {len(papers)}....')
 
     if papers == []:
-        
+
         push_title = f'Arxiv:{QUERY}[X]@{today}'
+        msg_content = f'今日暂无符合要求的论文更新\n查询主题：{QUERY}\n时间：{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}'
         send_wechat_message('', '[WARN] NO UPDATE TODAY!', SERVERCHAN_API_KEY)
+        send_feishu_message(push_title, msg_content, FEISHU_URL)
 
         print('[+] 每日推送任务执行结束')
 
@@ -309,7 +309,7 @@ def cronjob():
         else:
             msg_title = f'{title}'
 
-        msg_url = f'URL: {url} | Pub Date：{pub_date} | 评分: {score-5:.2f}/5'
+        msg_url = f'URL: {url} | Pub Date：{pub_date} | 评分: {score:.2f}/10'
         msg_rating = f'AI判断理由：{reason}' if reason else 'AI判断理由：无'
         msg_translated = f'Translated (Powered by {MODEL_TYPE}):\n{translated}'
 

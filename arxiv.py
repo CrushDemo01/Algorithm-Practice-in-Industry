@@ -14,7 +14,7 @@ from translate import translate, init_model_client
 
 SERVERCHAN_API_KEY = os.environ.get("SERVERCHAN_API_KEY", None)
 QUERY = os.environ.get('QUERY', 'cs.IR')
-LIMITS = int(os.environ.get('LIMITS', 3)) + 10
+LIMITS = int(os.environ.get('LIMITS', 3)) + 10*2
 FEISHU_URL = os.environ.get("FEISHU_URL", None)
 MODEL_TYPE = os.environ.get("MODEL_TYPE", "DeepSeek")
 PROMPT = os.environ.get("PROMPT", '无')

@@ -17,7 +17,7 @@ jobs:
       CAIYUN_TOKEN: ${{ secrets.CAIYUN_TOKEN }}
       QUERY: "cs.LG"
       LIMITS: 10
-      FEISHU_URL: ${{ secrets.FEISHU_URL_lg }}
+      FEISHU_URL: ${{ secrets.FEISHU_URL_CL }}
       DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
       MODEL_TYPE: "DeepSeek"
       PROMPT: "{推荐系统， 搜索系统， 大模型推荐， 广告推荐， 推荐系统召回模型， 推荐系统精排模型， 推荐系统end2end模型， 知名大厂出品， 知名学校或学术机构， 知名学者， 知名期刊或会议}"

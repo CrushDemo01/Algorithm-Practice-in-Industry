@@ -18,7 +18,7 @@ LIMITS = int(os.environ.get('LIMITS', 3)) + 10*2
 FEISHU_URL = os.environ.get("FEISHU_URL", None)
 MODEL_TYPE = os.environ.get("MODEL_TYPE", "DeepSeek")
 PROMPT = os.environ.get("PROMPT", '无')
-MIN_SCORE = os.environ.get('MIN_SCORE', 6)
+MIN_SCORE = 5
 try:
     MIN_SCORE = float(MIN_SCORE) if MIN_SCORE is not None else None
 except Exception:

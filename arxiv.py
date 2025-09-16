@@ -30,57 +30,49 @@ def get_yesterday():
     return yesterday.strftime('%Y-%m-%d')
 
 
-def search_arxiv_papers(search_term: str, max_results: int = 10) -> list:
-    """
-    通过 arXiv API 搜索论文并解析返回结果
-    """
+def search_arxiv_papers(search_term, max_results=50):
     papers = []
-    # MODIFIED: 使用 f-string 使 URL 构建更清晰
-    url = (
-        f'http://export.arxiv.org/api/query?'
-        f'search_query=all:{search_term}'
-        f'&start=0&max_results={max_results}'
-        f'&sortBy=submittedDate&sortOrder=descending'
-    )
 
-    try:
-        response = session.get(url, timeout=15) # ADDED: 增加超时设置
-        response.raise_for_status()  # ADDED: 如果请求失败 (如 404, 500)，会抛出异常
-    except requests.RequestException as e:
-        print(f"[!] 请求 arXiv API 失败: {e}")
+    url = f'http://export.arxiv.org/api/query?' + \
+          f'search_query=all:{search_term}' +  \
+          f'&start=0&&max_results={max_results}' + \
+          f'&sortBy=submittedDate&sortOrder=descending'
+
+    response = requests.get(url)
+
+    if response.status_code != 200:
         return []
 
-    # MODIFIED: 使用 XML 解析器代替脆弱的 .split() 方法
-    try:
-        root = ET.fromstring(response.text)
-        atom_ns = '{http://www.w3.org/2005/Atom}' # Arxiv API 使用的命名空间
+    feed = response.text
+    entries = feed.split('<entry>')[1:]
 
-        print('[+] 开始处理每日最新论文....')
-        for entry in root.findall(f'{atom_ns}entry'):
-            title = entry.find(f'{atom_ns}title').text.strip()
-            summary = entry.find(f'{atom_ns}summary').text.strip().replace('\n', ' ')
-            # ID 标签通常是 URL
-            url = entry.find(f'{atom_ns}id').text.strip()
-            pub_date_str = entry.find(f'{atom_ns}published').text
-            pub_date = datetime.datetime.strptime(pub_date_str, "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%d")
-
-            papers.append({
-                'title': title,
-                'url': url,
-                'pub_date': pub_date,
-                'summary': summary,
-                'translated': '',
-            })
-    except ET.ParseError as e:
-        print(f"[!] 解析 arXiv 返回的 XML 数据失败: {e}")
+    if not entries:
         return []
 
-    if not papers:
-        return []
+    print('[+] 开始处理每日最新论文....')
 
+    for entry in entries:
+
+        title = entry.split('<title>')[1].split('</title>')[0].strip()
+        summary = entry.split('<summary>')[1].split('</summary>')[0].strip().replace('\n', ' ').replace('\r', '')
+        url = entry.split('<id>')[1].split('</id>')[0].strip()
+        pub_date = entry.split('<published>')[1].split('</published>')[0]
+        pub_date = datetime.datetime.strptime(pub_date, "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%d")
+
+        papers.append({
+            'title': title,
+            'url': url,
+            'pub_date': pub_date,
+            'summary': summary,
+            'translated': '',
+        })
+    
     print('[+] 开始翻译每日最新论文并缓存....')
+
     papers = save_and_translate(papers)
+    
     return papers
+
 
 
 def send_wechat_message(title, content, SERVERCHAN_API_KEY):

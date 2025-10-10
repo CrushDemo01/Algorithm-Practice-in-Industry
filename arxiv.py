@@ -277,11 +277,11 @@ def cronjob():
     print(f'[+] 筛选后剩余稿件数量: {len(papers)}....')
 
     if papers == []:
-
-        push_title = f'Arxiv:{QUERY}[X]@{today}'
-        msg_content = f'今日暂无符合要求的论文更新\n查询主题：{QUERY}\n时间：{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}'
-        send_wechat_message('', '[WARN] NO UPDATE TODAY!', SERVERCHAN_API_KEY)
-        send_feishu_message(push_title, msg_content, FEISHU_URL)
+        # 没有就不推送了
+        # push_title = f'Arxiv:{QUERY}[X]@{today}'
+        # msg_content = f'今日暂无符合要求的论文更新\n查询主题：{QUERY}\n时间：{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}'
+        # send_wechat_message('', '[WARN] NO UPDATE TODAY!', SERVERCHAN_API_KEY)
+        # send_feishu_message(push_title, msg_content, FEISHU_URL)
 
         print('[+] 每日推送任务执行结束')
 

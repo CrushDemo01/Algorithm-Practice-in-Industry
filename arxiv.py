@@ -318,7 +318,17 @@ def cronjob():
         msg_content = f"[{msg_title}]({url})\n{msg_url}\n{msg_rating}\n{msg_translated}\n"
         # send_wechat_message(push_title, msg_content, SERVERCHAN_API_KEY)
         send_feishu_message(push_title, msg_content, FEISHU_URL)
+        
+        time.sleep(5)
 
+        pape_json = {"QUERY":QUERY,
+                    "URL": url,
+                    "Title": title,
+                    "Pub_date": pub_date,
+                    "Translated": translated,
+                    "Reason":reason,
+                    "Score":f'{score:.2f}'
+        response = requests.post(FEISHU_URL_excel, json=pape_json, headers={"Content-Type": "application/json"})
         time.sleep(10)
 
     print('[+] 每日推送任务执行结束')

@@ -328,7 +328,7 @@ def cronjob():
                     "Pub_date": pub_date,
                     "Translated": translated,
                     "Reason":reason,
-                    "Score":f'{score:.2f}'
+                    "Score":f'{score:.2f}'}
         response = requests.post(FEISHU_URL_excel, json=pape_json, headers={"Content-Type": "application/json"})
         time.sleep(10)
 

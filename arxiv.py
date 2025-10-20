@@ -16,6 +16,7 @@ SERVERCHAN_API_KEY = os.environ.get("SERVERCHAN_API_KEY", None)
 QUERY = os.environ.get('QUERY', 'cs.IR')
 LIMITS = int(os.environ.get('LIMITS', 3)) + 10*2
 FEISHU_URL = os.environ.get("FEISHU_URL", None)
+FEISHU_URL_excel = os.environ.get("FEISHU_URL_excel", None)
 MODEL_TYPE = os.environ.get("MODEL_TYPE", "DeepSeek")
 PROMPT = os.environ.get("PROMPT", '无')
 MIN_SCORE = 5

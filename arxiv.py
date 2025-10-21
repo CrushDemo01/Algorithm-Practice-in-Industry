@@ -321,7 +321,6 @@ def cronjob():
         send_feishu_message(push_title, msg_content, FEISHU_URL)
         
         time.sleep(5)
-
         pape_json = {"QUERY":QUERY,
                     "URL": url,
                     "Title": title,
@@ -329,8 +328,10 @@ def cronjob():
                     "Translated": translated,
                     "Reason":reason,
                     "Score":f'{score:.2f}'}
+        
         response = requests.post(FEISHU_URL_excel, json=pape_json, headers={"Content-Type": "application/json"})
-        time.sleep(10)
+        print("推送 json", pape_json)
+        time.sleep(5)
 
     print('[+] 每日推送任务执行结束')
 

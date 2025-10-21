@@ -15,6 +15,7 @@ jobs:
     env:
       SERVERCHAN_API_KEY: ${{ secrets.SERVERCHAN_API_KEY }}
       CAIYUN_TOKEN: ${{ secrets.CAIYUN_TOKEN }}
+      FEISHU_URL_excel: ${{secrets.FEISHU_URL_excel}}
       QUERY: "cs.IR"
       LIMITS: 10
       FEISHU_URL: ${{ secrets.FEISHU_URL_ir }}

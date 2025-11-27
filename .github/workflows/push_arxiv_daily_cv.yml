@@ -37,9 +37,8 @@ jobs:
       - name: Install dependencies
         run: pip install tqdm requests openai
 
-
-      - name: PUSH ARXIV DAILY
-        run: python arxiv.py
+      # - name: PUSH ARXIV DAILY
+        # run: python arxiv.py
         
       - name: Commit files
         id: commit
